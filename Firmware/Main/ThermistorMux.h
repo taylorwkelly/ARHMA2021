@@ -7,9 +7,4 @@
 #define SELECT_A 40
 #define SELECT_B 39
 
-typedef struct {
-  byte *currentMuxSelects;
-  bool *switchInProgress;
-} MuxTaskData;
-
-void switchSelects(MuxTaskData mTData);
+void switchSelects(byte *currentMuxSelects);

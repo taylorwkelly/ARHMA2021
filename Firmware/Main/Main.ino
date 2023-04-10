@@ -142,7 +142,7 @@ void setup() {
   s3 = xTaskCreate(idleTask, "IDLE_TASK", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
   s4 = xTaskCreate(displayTask, "DISPLAY TASK", DISPLAY_TASK_STACK_SIZE, (void*)&measurementData, 2, NULL);
   s5 = xTaskCreate(dataLoggingTask, "DATA LOGGING TASK", DATALOGGING_TASK_STACK_SIZE, (void*)&dataLoggingTaskData, 3, NULL);
-  s6 = xTaskCreate(muxTask, "MUX TASK", MUX_TASK_STACK_SIZE, (void *)&muxTaskData, 4, NULL);
+  s6 = xTaskCreate(muxTask, "MUX TASK", MUX_TASK_STACK_SIZE, (void *)&currentMuxSelects, 4, NULL);
 
   /// Then, the firmware checks if the tasks passed, if they failed, it stays in a loop printing error
   /// creating tasks.
@@ -233,7 +233,7 @@ void initializeCANStructs() {
   thermistorTemps = {thTemps};
   chargerStats = {&chargeFlag, &chargerStatusFlag, &chargerVoltage, &chargerCurrent, &chargerTemp};
   chargeControllerStats = {&evccEnable, &evccVoltage, &evccCurrent};
-  canTaskData = {motorStats, motorTemps, bmsStatus, thermistorTemps, cellVoltages, chargerStats, chargeControllerStats, &seriesVoltage};
+  canTaskData = {motorStats, motorTemps, bmsStatus, thermistorTemps, cellVoltages, chargerStats, chargeControllerStats, &seriesVoltage, &currentMuxSelects};
 }
 
 void initializePreChargeStruct() {

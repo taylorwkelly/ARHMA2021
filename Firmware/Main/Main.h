@@ -187,7 +187,6 @@ static int8_t chargerTemp = 0;
 
 // The mux info for recording thermistor data
 static byte currentMuxSelects;
-static bool switchInProgress;
 
 /// An instance of a struct to store all display data
 static MeasurementScreenData measurementData = {};
@@ -234,8 +233,6 @@ static CSVWriter thermistorLog = {};
 static CSVWriter bmsVoltageLog = {};
 /// An instance of the logging struct for storing all the above logs to pass onto dataLogging.
 static CSVWriter *logs[] = {&motorTemperatureLog, &motorControllerTemperatureLog, &motorControllerVoltageLog, &motorCurrentLog, &rpmLog, &thermistorLog, &bmsVoltageLog};
-
-static MuxTaskData muxTaskData = {&currentMuxSelects, &switchInProgress};
 
 /// @brief
 unsigned long timer = millis();

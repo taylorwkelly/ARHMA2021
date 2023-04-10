@@ -7,9 +7,9 @@
 
 #define switchesPerSec 1
 
-void muxTask(void *muxTaskDataPtr) {
+void muxTask(void *currentMuxSelects) {
   while (1) {
-    switchSelects(*((MuxTaskData *)muxTaskDataPtr));
+    switchSelects((byte *)currentMuxSelects);
     vTaskDelay(configTICK_RATE_HZ / switchesPerSec); 
   }
 }
@@ -21,33 +21,31 @@ void muxTask(void *muxTaskDataPtr) {
   
 // an issue: in the worst case, there would be 6 seconds between one set of therms being
 // reconnected to the BMS
-void switchSelects(MuxTaskData mTData) {
+void switchSelects(byte *currentMuxSelects) {
   static float counter = 0;
   byte nextSelects = ((byte)counter) % 4;
-  *(mTData.switchInProgress) = true;
   switch(nextSelects) {               // AB
     case 0:                           // 00
       digitalWrite(SELECT_A, LOW);  
       digitalWrite(SELECT_B, LOW);
-      *mTData.currentMuxSelects = 0;
+      *currentMuxSelects = 0;
       break;
     case 1:                           // 01
       digitalWrite(SELECT_A, LOW);
       digitalWrite(SELECT_B, HIGH);
-      *mTData.currentMuxSelects = 1;
+      *currentMuxSelects = 1;
       break;
     case 2:                           // 10
       digitalWrite(SELECT_A, HIGH);
       digitalWrite(SELECT_B, LOW);
-      *mTData.currentMuxSelects = 2;
+      *currentMuxSelects = 2;
       break;
     case 3:                           // 11
       digitalWrite(SELECT_A, HIGH);
       digitalWrite(SELECT_B, HIGH);
-      *mTData.currentMuxSelects = 3;
+      *currentMuxSelects = 3;
       break;
   }
-  *(mTData.switchInProgress) = false;
   counter = counter + 1 + (1 / (4 * switchesPerSec)); // sum of (1 / (4 * switchesPerSec))'s will add up to 1 after 4 seconds
   if (counter >= 4 * (1 + (4 * switchesPerSec))) {    // 0 and RHS should be equivalent states for the counter (SORRY)
     counter = 0;

@@ -120,14 +120,14 @@ void decipherCellsVoltage(CAN_message_t msg, CellVoltages cellVoltages) {
   }
 }
 
-void decipherThermistors(CAN_message_t msg, ThermistorTemps thermistorTemps) {
+void decipherThermistors(CAN_message_t msg, ThermistorTemps thermistorTemps, byte currentMuxSelects) {
   byte ltcID = msg.buf[0];
   thermistorEnabled = msg.buf[1];
   thermistorPresent = msg.buf[2];
   byte *currentThermistor = &msg.buf[3];
   int thermistor;
   for (thermistor = 0; thermistor < 5; thermistor++) {
-    thermistorTemps.temps[thermistor + 5 * ltcID] = currentThermistor[thermistor];
+    thermistorTemps.temps[thermistor + 5 * ltcID + 10 * currentMuxSelects] = currentThermistor[thermistor];
   }
 }
 
@@ -180,7 +180,7 @@ void checkCAN(CANTaskData canData) {
         decipherCellsVoltage(CAN_msg,  canData.cellVoltages);
         break;
       case DD_BMSC_TH_STATUS_IND:
-        decipherThermistors(CAN_msg, canData.thermistorTemps);
+        decipherThermistors(CAN_msg, canData.thermistorTemps, *(canData.currentMuxSelects));
         break;
     }
   }
