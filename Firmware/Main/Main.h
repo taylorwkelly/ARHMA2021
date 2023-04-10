@@ -57,6 +57,7 @@
 #include "Display.h"
 #include "Precharge.h"
 #include "DataLogging.h"
+#include "ThermistorMux.h"
 #include "FreeRTOS_TEENSY4.h"
 #include <TimeLib.h>
 
@@ -69,7 +70,7 @@
 
 /// This exists to be changed based on the final number of thermistors
 /// we settle on having in the code later.
-#define NUM_THERMI 10
+#define NUM_THERMI 40
 
 /// A screen enum that defines the type of screen to generate
 /// in Display.ino.
@@ -184,6 +185,10 @@ static float chargerCurrent = 0;
 /// Self explanatory. Read datasheet if more info needed.
 static int8_t chargerTemp = 0;
 
+// The mux info for recording thermistor data
+static byte currentMuxSelects;
+static bool switchInProgress;
+
 /// An instance of a struct to store all display data
 static MeasurementScreenData measurementData = {};
 /// An instance of a struct to store all motor data
@@ -229,6 +234,8 @@ static CSVWriter thermistorLog = {};
 static CSVWriter bmsVoltageLog = {};
 /// An instance of the logging struct for storing all the above logs to pass onto dataLogging.
 static CSVWriter *logs[] = {&motorTemperatureLog, &motorControllerTemperatureLog, &motorControllerVoltageLog, &motorCurrentLog, &rpmLog, &thermistorLog, &bmsVoltageLog};
+
+static MuxTaskData muxTaskData = {&currentMuxSelects, &switchInProgress};
 
 /// @brief
 unsigned long timer = millis();
